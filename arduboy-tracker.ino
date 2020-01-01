@@ -113,19 +113,31 @@ Sounds _Sounds;
 // Strings
 ////////////////////////////////////////////////////////////
 
-// Print a string with font size 1 and non-monospace spaces.
-void print_str_pretty (char *str) {
+// Shift the cursor
+void shiftX(int16_t delta) {
   uint8_t x = arduboy.getCursorX();
   uint8_t y = arduboy.getCursorY();
+  arduboy.setCursor(int16_t(x) + delta, y);
+}
+
+int8_t char_left_correction(char c) {
+  if (c == ' ') return -1;
+  if (c == ':') return -1;
+  return 0;
+}
+int8_t char_right_correction(char c) {
+  if (c == ' ') return -1;
+  if (c == ':') return -1;
+  return 0;
+}
+
+// Print a string with font size 1 and nice widths.
+void print_str_pretty (char *str) {
   char* c = str;
   while (*c) {
+    shiftX(char_left_correction(*c));
     arduboy.write(*c);
-    if (*c == ' ') {
-      x += 4;
-    } else {
-      x += 6;
-    }
-    arduboy.setCursor(x, y);
+    shiftX(char_right_correction(*c));
     c++;
   }
 }
@@ -136,13 +148,9 @@ uint8_t str_width (char *str) {
   if (*c == NULL) {
     return 0;
   } else {
-    uint8_t sum = 0;
+    uint16_t sum = 0;
     while (*c) {
-      if (*c == ' ') {
-        sum += 4;
-      } else {
-        sum += 6;
-      }
+      sum += 5 + char_left_correction(*c) + char_right_correction(*c) + 1;
       c++;
     }
     sum--;
@@ -206,12 +214,16 @@ class Timer {
       }
       if (arduboy.pressed(A_BUTTON)) {
         String info = "";
-        info += String(elapsed() / 1000);
-        info += String("s");
+        unsigned long mm = (elapsed() / 1000) / 60;
+        unsigned long ss = (elapsed() / 1000) % 60;
+        info += String(mm) + ":";
+        if (ss < 10) {
+          info += "0" + String(ss);
+        } else {
+          info += String(ss);
+        }
         if (timer_minutes != 0) {
-          info += String(" of ");
-          info += String(timer_minutes * 60);
-          info += String("s");
+          info += " / " + String(timer_minutes) + ":00";
         }
         uint8_t width = str_width(info.c_str());
         uint8_t x = (128 - str_width(info.c_str())) / 2;
