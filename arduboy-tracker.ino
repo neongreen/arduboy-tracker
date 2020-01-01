@@ -10,7 +10,8 @@ ArduboyTones sound(arduboy.audio.enabled);
 // Constants
 ////////////////////////////////////////////////////////////
 
-const uint8_t timer_height = 3; // pixels
+const uint8_t timer_height = 3;
+const uint8_t counters_width = 110;
 
 struct CounterSettings {
   // Index of the counter in persistent memory. Useful if you
@@ -27,9 +28,10 @@ struct CounterSettings {
 
 // Put your own counters here.
 const CounterSettings counterSettings[] = {
-  { 4, "FEEL ADDICT", true },
-  { 1, "READ MESSG", true },
-  { 2, "EXERT WILL", true },
+  { 4, "FEEL ADDICTION", true },
+  { 1, "READ MESSAGES", true },
+  { 2, "EXERT OWN WILL", true },
+  { 5, "DAYS NO TWITTER", true },
 };
 
 ////////////////////////////////////////////////////////////
@@ -304,20 +306,22 @@ class Counters {
       // Gap between lines
       const uint8_t Y_GAP = 9 - COUNT;
       // Size of the whole block
+      const uint8_t X_SIZE = counters_width;
       const uint8_t Y_SIZE = 7 * COUNT + Y_GAP * (COUNT - 1);
-      // Gap between the top and the block
-      const uint8_t Y_TOP = (64 - timer_height - Y_SIZE) / 2;
+      // Margins
+      const uint8_t X_MARGIN = (128 - X_SIZE) / 2;
+      const uint8_t Y_MARGIN = (64 - timer_height - Y_SIZE) / 2;
 
       arduboy.setTextSize(1);
       for (int i = 0; i < COUNT; ++i) {
-        uint8_t x = 18;
-        uint8_t y = Y_TOP + (7 + Y_GAP) * i;
+        uint8_t x = X_MARGIN;
+        uint8_t y = Y_MARGIN + (7 + Y_GAP) * i;
         if (i == current) {
-          arduboy.fillTriangle(x, y, x + 3, y + 3, x, y + 6);
+          arduboy.fillTriangle(x - 8, y, x - 5, y + 3, x - 8, y + 6);
         }
-        arduboy.setCursor(x + 8, y);
+        arduboy.setCursor(x, y);
         print_str_pretty(counterSettings[i].caption);
-        arduboy.setCursor(x + 80, y);
+        arduboy.setCursor(x + X_SIZE - 9, y);
         arduboy.print(values[i]);
       }
     }
