@@ -11,6 +11,7 @@ ArduboyTones sound(arduboy.audio.enabled);
 ////////////////////////////////////////////////////////////
 
 const uint8_t timer_height = 3;
+const uint8_t char_height = 7;
 const uint8_t counters_width = 110;
 
 struct CounterSettings {
@@ -29,9 +30,12 @@ struct CounterSettings {
 // Put your own counters here.
 const CounterSettings counterSettings[] = {
   { 4, "FEEL ADDICTION", true },
+  { 8, "FEEL SLEEPY", true },
   { 1, "READ MESSAGES", true },
   { 2, "EXERT OWN WILL", true },
   { 5, "DAYS NO TWITTER", true },
+  // 6
+  { 7, "GRATITUDE ADMIT", true },
 };
 
 ////////////////////////////////////////////////////////////
@@ -214,6 +218,7 @@ class Timer {
         // Draw the last tick
         arduboy.fillRect(127, 64 - timer_height, 1, timer_height);
       }
+      // Draw timer info when A is pressed
       if (arduboy.pressed(A_BUTTON)) {
         String info = "";
         unsigned long mm = (elapsed() / 1000) / 60;
@@ -228,9 +233,12 @@ class Timer {
           info += " / " + String(timer_minutes) + ":00";
         }
         uint8_t width = str_width(info.c_str());
-        uint8_t x = (128 - str_width(info.c_str())) / 2;
-        arduboy.fillRect(x - 1, 54, width + 2, 9, BLACK);
-        arduboy.setCursor(x, 55);
+        uint8_t x = (128 - str_width(info.c_str())) / 2; // text X
+        uint8_t y_gap = 3;
+        uint8_t y = 64 - timer_height - y_gap - char_height; // text Y
+        arduboy.drawRect(0, y - y_gap - 1, 128, 1);
+        arduboy.fillRect(0, y - y_gap, 128, char_height + y_gap * 2, BLACK);
+        arduboy.setCursor(x, y);
         print_str_pretty(info.c_str());
       }
     }

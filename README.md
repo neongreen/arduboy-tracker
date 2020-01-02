@@ -4,6 +4,8 @@
 
 * 2020-01-01: show seconds while holding `A`; longer timer buzz
 
+* 2020-01-02: show seconds better
+
 ## Building
 
 You will need the `Arduboy2` and `ArduboyTones` libraries installed.
